@@ -1,0 +1,17 @@
+[package]
+name = "ELApse"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/BlackDragon-B/ELApse"
+authors = ["BlackDragon-B <kyan@blackdrgn.nl>"]
+license = "GPL-3.0"
+readme = "README.md"
+
+[dependencies]
+clap = { version = "4.5.17", features = ["cargo"] }
+image = "0.25.2"
+piston = "1.0.0"
+piston2d-graphics = "0.44.0"
+piston_window = "0.132.0"
+rand = "0.8.5"
+unreal_asset = "0.1.16"
