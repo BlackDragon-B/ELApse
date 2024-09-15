@@ -1,15 +1,15 @@
-use std::fs::{self, read, File};
-use image::ImageReader;
+use std::{ffi::OsStr, fs::{self, read, File}, os::raw, path::Path};
+use image::{ImageFormat, ImageReader};
 use unreal_asset::{asset::AssetTrait, cast, engine_version::EngineVersion, exports::{self, normal_export::NormalExport, Export, ExportBaseTrait}, properties::{array_property::ArrayProperty, color_property::ColorProperty, struct_property::StructProperty, Property}, types::{fname::FNameContainer, PackageIndex}, Asset};
 
-pub fn rawrgb(path: &str) -> Result<Vec<u8>, String> {
+fn rawrgb(path: &str) -> Result<Vec<u8>, String> {
     match fs::read(path) {
         Ok(res) => Ok(res),
         Err(e) => Err(e.to_string()),
     }
 }
 
-pub fn image(path: &str) -> Result<Vec<u8>, String> {
+fn image(path: &str) -> Result<Vec<u8>, String> {
     match image::ImageReader::open(path) {
         Ok(res) => {
             match res.decode() {
@@ -23,8 +23,8 @@ pub fn image(path: &str) -> Result<Vec<u8>, String> {
     }
 }
 
-
-pub fn uasset(path: &str) -> Result<Vec<u8>, String> {
+//Shitty formats = Shitty code
+fn uasset(path: &str) -> Result<Vec<u8>, String> {
     let Some(path) = path.strip_suffix(".uasset") else {
         return Err("File not .uasset".to_string())
     };
@@ -76,4 +76,19 @@ pub fn uasset(path: &str) -> Result<Vec<u8>, String> {
         }
     }
     Ok(output)
+}
+
+pub fn parse(path: &str) -> Result<Vec<u8>, String> {
+    match Path::new(path).extension().and_then(OsStr::to_str) {
+        Some(s) => {
+            if s == "uasset" {
+                uasset(path)
+            } else if ImageFormat::from_extension(s).is_some() {
+                image(path)
+            } else {
+                rawrgb(path)
+            }
+        },
+        None => rawrgb(path),
+    }
 }

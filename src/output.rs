@@ -1,3 +1,4 @@
+#![allow(non_camel_case_types)]
 extern crate piston_window;
 
 use graphics;
@@ -31,7 +32,7 @@ pub fn piston(rx: Receiver<Vec<[f32; 4]>>) {
     }
 }
 
-pub fn realtimeudp(rx: Receiver<Vec<[f32; 4]>>) {
+pub fn realtimeudp(rx: Receiver<Vec<[f32; 4]>>, addr: String) {
     let socket = UdpSocket::bind("0.0.0.0:0").unwrap();
     loop {
         let leds = rx.recv().unwrap();
@@ -41,6 +42,18 @@ pub fn realtimeudp(rx: Receiver<Vec<[f32; 4]>>) {
             packet.push((led[1]*255.0) as u8);
             packet.push((led[2]*255.0) as u8);
         }
-        let _ = socket.send_to(&packet, SocketAddr::from(([204, 2, 68, 140 ], 21324))).unwrap();
+        match socket.send_to(&packet, &addr) {
+            Ok(_) => (),
+            Err(err) => {
+                println!("Error while sending trying to send data: {}", err);
+                std::process::exit(1);
+            },
+        };
     }
+}
+
+#[derive(clap::ValueEnum, Clone, Debug)]
+pub enum Output {
+    piston,
+    realtimeudp,
 }

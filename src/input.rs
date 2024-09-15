@@ -1,5 +1,5 @@
+#![allow(non_camel_case_types)]
 use std::{io::Read, net::UdpSocket, sync::mpsc::{self, Receiver, Sender}, thread, time::{Duration, Instant}};
-
 use crate::{ parser, fileparser };
 
 pub fn stdin(tx: Sender<Vec<[f32; 4]>>) {
@@ -23,7 +23,7 @@ pub fn stdin(tx: Sender<Vec<[f32; 4]>>) {
                     let _ = tx.send(r);
                 },
                 Err(_) => {
-                    std::process::exit(0x0100);
+                    std::process::exit(0);
                 },
             };
         }
@@ -42,9 +42,9 @@ pub fn realtimeudp(tx: Sender<Vec<[f32; 4]>>) {
     });
 }
 
-pub fn file(tx: Sender<Vec<[f32; 4]>>) {
+pub fn file(tx: Sender<Vec<[f32; 4]>>, path: String) {
     thread::spawn( move || {
-        let Ok(rawbytes) = fileparser::rawrgb("out.raw.lily") else {
+        let Ok(rawbytes) = fileparser::parse(&path) else {
             std::process::exit(1)
         };
         for frame in rawbytes.chunks(720) {
@@ -57,4 +57,11 @@ pub fn file(tx: Sender<Vec<[f32; 4]>>) {
         }
         std::process::exit(0);
     });
+}
+
+#[derive(clap::ValueEnum, Clone, Debug)]
+pub enum Input {
+    stdin,
+    realtimeudp,
+    file,
 }
