@@ -11,16 +11,19 @@ use clap::{command, error::{self, ContextKind, ContextValue, ErrorKind}, Parser}
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    /// Name of the person to greet
+    /// Input driver to use
     #[arg(short, long)]
     input: input::Input,
 
+    /// File input for the file driver
     #[arg(required(false), short, long, requires = "input")]
     file: Option<String>,
 
+    /// Output driver to use
     #[arg(short, long)]
     output: output::Output,
 
+    /// Destination IP for the realtimeudp driver
     #[arg(required(false), short, long, requires = "output")]
     destip: Option<String>,
 }
@@ -30,7 +33,6 @@ fn main() {
     // let mut arg = clap::command!()
     //     .arg(clap::arg!(-o --output <file> "The output file to write to. Use - for stdout."))
     //     .arg_required_else_help(true);
-    let x = true;
     let (tx, rx): (Sender<Vec<[f32; 4]>>, Receiver<Vec<[f32; 4]>>) = mpsc::channel();
     // if x {
     //     input::stdin(tx);
