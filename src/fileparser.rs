@@ -1,6 +1,6 @@
-use std::{ffi::OsStr, fs::{self, read, File}, os::raw, path::Path};
-use image::{ImageFormat, ImageReader};
-use unreal_asset::{asset::AssetTrait, cast, engine_version::EngineVersion, exports::{self, normal_export::NormalExport, Export, ExportBaseTrait}, properties::{array_property::ArrayProperty, color_property::ColorProperty, struct_property::StructProperty, Property}, types::{fname::FNameContainer, PackageIndex}, Asset};
+use std::{ffi::OsStr, fs::{self, File}, path::Path};
+use image::ImageFormat;
+use unreal_asset::{cast, engine_version::EngineVersion, exports::Export, properties::Property, Asset};
 
 fn rawrgb(path: &str) -> Result<Vec<u8>, String> {
     match fs::read(path) {

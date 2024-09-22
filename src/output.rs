@@ -1,10 +1,8 @@
 #![allow(non_camel_case_types)]
-extern crate piston_window;
 
-use graphics;
 use piston_window::*;
-use graphics::math::Scalar;
-use std::{net::{SocketAddr, UdpSocket}, sync::mpsc::Receiver, time::Duration};
+use piston_window::graphics::math::Scalar;
+use std::{net::UdpSocket, sync::mpsc::Receiver, time::Duration};
 
 use crate::utils::{compare, offset};
 

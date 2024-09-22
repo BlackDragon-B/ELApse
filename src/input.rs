@@ -30,9 +30,9 @@ pub fn stdin(tx: Sender<Vec<[f32; 4]>>) {
     });
 }
 
-pub fn realtimeudp(tx: Sender<Vec<[f32; 4]>>) {
+pub fn realtimeudp(tx: Sender<Vec<[f32; 4]>>,bindaddr: String) {
     thread::spawn( move || {
-        let socket = UdpSocket::bind("127.0.0.1:21324").unwrap();
+        let socket = UdpSocket::bind(bindaddr).unwrap();
         let mut buf = [0; 1500];
         loop {
             let (amt, _src) = socket.recv_from(&mut buf).unwrap();
@@ -45,6 +45,7 @@ pub fn realtimeudp(tx: Sender<Vec<[f32; 4]>>) {
 pub fn file(tx: Sender<Vec<[f32; 4]>>, path: String) {
     thread::spawn( move || {
         let Ok(rawbytes) = fileparser::parse(&path) else {
+            println!("File not found");
             std::process::exit(1)
         };
         for frame in rawbytes.chunks(720) {
@@ -57,11 +58,4 @@ pub fn file(tx: Sender<Vec<[f32; 4]>>, path: String) {
         }
         std::process::exit(0);
     });
-}
-
-#[derive(clap::ValueEnum, Clone, Debug)]
-pub enum Input {
-    stdin,
-    realtimeudp,
-    file,
 }

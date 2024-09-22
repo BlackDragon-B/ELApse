@@ -1,5 +1,3 @@
-use clap::error::{ContextKind, ContextValue, ErrorKind};
-
 pub fn compare(a: f64, b: f64) -> f64 {
     if a > b {
         b
@@ -20,9 +18,19 @@ pub fn scaleu8tof32(old_value: u8) -> f32 { // Convert a u8 between 0 and 255 to
     (((old_value as f32 - 0.0) * (0.0 - 1.0)) / (0.0 - 255.0)) + 0.0
 }
 
-pub fn err_missing_args(args: Vec<String>) {
-    let mut err = clap::Error::new(ErrorKind::MissingRequiredArgument);
-    err.insert(ContextKind::InvalidArg, ContextValue::Strings(args));
-    let _ = err.print();
-    std::process::exit(1);
+pub fn get_host(url: url::Url) -> String {
+    match url.host_str() {
+        Some(addr) => {
+            let port = match url.port() {
+                Some(port) => port,
+                None => 21324,
+            };
+            return format!("{}:{}",addr,port);
+        },
+        None => {
+            println!("Invalid host");
+            std::process::exit(1);
+        },
+    }
+
 }
